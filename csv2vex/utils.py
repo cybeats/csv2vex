@@ -4,9 +4,11 @@ from cyclonedx.model.vulnerability import Vulnerability, VulnerabilityReference,
 from cyclonedx.schema import OutputFormat, SchemaVersion
 from cyclonedx.output import make_outputter, BaseOutput
 from cyclonedx.model.bom import Bom
-from cyclonedx.model import Tool, XsUri
+from cyclonedx.model import XsUri 
+from cyclonedx.model.tool import Tool
 from cyclonedx.model.impact_analysis import ImpactAnalysisState, ImpactAnalysisJustification, ImpactAnalysisResponse
 from cyclonedx.model.contact import OrganizationalContact, OrganizationalEntity
+from cyclonedx.model.component import Component, ComponentType
 import json
 from datetime import datetime
 import csv2vex
@@ -549,18 +551,19 @@ def make_vex(values) -> None:
 
     bom.vulnerabilities = vulns
 
-    bom.metadata.tools.add(
-                                Tool(
-                                        name="csv2vex",
-                                        version=csv2vex.__version__,
-                                        vendor="Cybeats Technologies",
+    bom.metadata.tools.components.add(
+                                        Component(
+                                                    name="csv2vex",
+                                                    version=csv2vex.__version__,
+                                                    publisher="CyBeats Technologies Inc",
+                                                    type=ComponentType.APPLICATION
+                                                )
                                     )
-                            )
     
     out:BaseOutput = make_outputter(
                                         bom=bom, 
                                         output_format=OutputFormat.JSON, 
-                                        schema_version=SchemaVersion.V1_5
+                                        schema_version=SchemaVersion.V1_7
                                     )
     
     
