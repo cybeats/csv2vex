@@ -128,7 +128,13 @@ def read_file(data_file:str) -> tuple[int, pd.DataFrame]:
         data = data.replace(np.nan, None)
     elif ext in ['.xls', '.xlsx']:
         data = pd.read_excel(filepath, dtype=str)
+        cell_value = data.iat[3, 0]
+        if cell_value == "Subsystem":
+            data.columns = data.iloc[3]
+            data = data.drop([0,1,2,3])
+            data = data.reset_index(drop=True)
         data = data.replace(np.nan, None)
+        data = data.fillna("")
     else:
         err = 1
     data = data.apply(lambda x: x.str.strip())
@@ -154,7 +160,9 @@ def get_val(keyword:str, csv_data:pd.Series, config_data:dict) -> str | None:
     if key is None:
         return res
     if type(key) is str:
-        res = csv_data.get(key)
+        ret = csv_data.get(key)
+        if ret:
+            res = ret
     return res
 
 def normalize_analysis(value:str) -> str:
